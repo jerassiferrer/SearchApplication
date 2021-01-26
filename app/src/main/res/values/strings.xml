@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SearchApplication</string>
+    <string name="search_fragment_label">Search Artist</string>
+    <string name="enter_artist">Enter Artist</string>
+    <string name="error_loading">error loading</string>
+
+</resources>
