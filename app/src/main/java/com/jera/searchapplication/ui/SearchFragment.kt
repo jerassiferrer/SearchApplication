@@ -58,7 +58,11 @@ class SearchFragment : Fragment() {
         binding.enterArtistEt.queryHint = getString(R.string.enter_artist)
         binding.enterArtistEt.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { viewModel.setSearchData(it) }
+                if(query.isNullOrBlank()){
+                    Toast.makeText( requireContext(),getText(R.string.empty_text), Toast.LENGTH_SHORT).show()
+                }else {
+                    query?.let { viewModel.setSearchData(it) }
+                }
                 return false
             }
 
