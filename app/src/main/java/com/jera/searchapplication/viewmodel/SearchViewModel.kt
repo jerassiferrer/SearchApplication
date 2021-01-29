@@ -8,7 +8,7 @@ import java.lang.Exception
 
 class SearchViewModel(private val repo: Repo) : ViewModel() {
 
-    private val  searchData = MutableLiveData<String>()
+     val  searchData = MutableLiveData<String>()
 
     fun setSearchData(artistName : String){
         searchData.value = artistName

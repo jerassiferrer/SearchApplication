@@ -1,11 +1,14 @@
 package com.jera.searchapplication.ui
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
@@ -58,11 +61,7 @@ class SearchFragment : Fragment() {
         binding.enterArtistEt.queryHint = getString(R.string.enter_artist)
         binding.enterArtistEt.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if(query.isNullOrBlank()){
-                    Toast.makeText( requireContext(),getText(R.string.empty_text), Toast.LENGTH_SHORT).show()
-                }else {
-                    query?.let { viewModel.setSearchData(it) }
-                }
+                query?.let { verifyInputText(it) }
                 return false
             }
 
@@ -72,22 +71,37 @@ class SearchFragment : Fragment() {
 
         })
         binding.enterArtistBtn.setOnClickListener {
-            viewModel.setSearchData(binding.enterArtistEt.query.toString())
+            verifyInputText(binding.enterArtistEt.query.toString())
+            val inputMethodManager = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+        }
+    }
+
+    private fun verifyInputText(text : String){
+        if(text.isNullOrBlank()){
+            Toast.makeText( requireContext(),getText(R.string.empty_text), Toast.LENGTH_SHORT).show()
+        }else {
+            text?.let { viewModel.setSearchData(it) }
         }
     }
 
     private fun setUpRecyclerView(){
         binding.searchRv.layoutManager = LinearLayoutManager(requireContext())
         binding.searchRv.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        binding.searchRv.adapter = SearchAdapter(requireContext())
+    }
+
+    private fun setUpObservers(){
         viewModel.fetchTracksList.observe(viewLifecycleOwner, Observer { result ->
             Log.d("SearchFragment", "result++++++:$result")
             when (result) {
                 is Resource.Loading -> {
+                    (binding.searchRv.adapter as SearchAdapter).clearData()
                     binding.searchProgressBar.visibility = View.VISIBLE
                 }
                 is Resource.Success -> {
                     binding.searchProgressBar.visibility = View.GONE
-                    binding.searchRv.adapter = SearchAdapter(requireContext(), result.data as List<Track>)
+                    (binding.searchRv.adapter as SearchAdapter).setData(result.data as List<Track>)
                 }
                 is Resource.Failure -> {
                     binding.searchProgressBar.visibility= View.GONE
@@ -96,10 +110,6 @@ class SearchFragment : Fragment() {
                 }
             }
         })
-    }
-
-    private fun setUpObservers(){
-
     }
 
 }

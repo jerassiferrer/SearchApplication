@@ -10,8 +10,8 @@ import com.jera.searchapplication.R
 import com.jera.searchapplication.base.BaseViewHolder
 import com.jera.searchapplication.data.model.Track
 
-class SearchAdapter(private val context: Context , private val tracksList: List<Track>):
-    RecyclerView.Adapter<BaseViewHolder<*>>() {
+class SearchAdapter(private val context: Context): RecyclerView.Adapter<BaseViewHolder<*>>() {
+    private var tracksList: List<Track> = emptyList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return SearchViewHolder(LayoutInflater.from(context).inflate(R.layout.tracks_row, parent,false))
     }
@@ -24,6 +24,16 @@ class SearchAdapter(private val context: Context , private val tracksList: List<
 
     override fun getItemCount(): Int {
         return tracksList.size
+    }
+
+    fun setData(dataList: List<Track>){
+        tracksList = dataList
+        notifyDataSetChanged()
+    }
+
+    fun clearData(){
+        tracksList = emptyList()
+        notifyDataSetChanged()
     }
 
     inner class SearchViewHolder(itemView: View): BaseViewHolder<Track>(itemView){
